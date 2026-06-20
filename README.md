@@ -1,4 +1,4 @@
-# Alpaca Trading App
+# Intraday Trading App
 
 FastAPI dashboard and a cron-driven Python trading bot against the Alpaca paper trading API. Screens ~10K tradable symbols across 8 technical filters, runs four intraday strategies, and flattens all positions 30 minutes before market close.
 
@@ -53,8 +53,8 @@ Paper trading only (`paper-api.alpaca.markets`). No real capital is at risk.
 Python 3.10+, an Alpaca paper trading account, and a Gmail account with an [app password](https://support.google.com/accounts/answer/185833). The four strategy scripts use stdlib `smtplib` to email a notification on each fill — no SMTP creds means the scripts will fail at the email step.
 
 ```bash
-git clone https://github.com/sidyn4444/Alpaca-Stock-Trading-App.git
-cd Alpaca-Stock-Trading-App
+git clone https://github.com/sidyn4444/Intraday-Trading-App.git
+cd Intraday-Trading-App
 
 python3 -m venv venv
 source venv/bin/activate
