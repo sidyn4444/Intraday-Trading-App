@@ -1,17 +1,6 @@
-<html>
-    <head>
-        <title>stocks</title>
-        <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"
-        >
-        <script
-            src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"
-        ></script>
-    </head>
+{% extends "layout.html" %}
 
-    <body>
-        <div class = "ui container">
+{% block content %}
             <h1> Stock List</h1>
             <!-- Filter form for stocks -->
             <form method="get">
@@ -23,6 +12,18 @@
                     value="new_closing_highs">New Closing Highs</option>
                     <option {% if request.query_params.filter == 'new_closing_lows' %} selected ='selected' {% endif %}
                     value="new_closing_lows">New Closing Lows</option>
+                    <option {% if request.query_params.filter == 'rsi_overbought' %} selected ='selected' {% endif %}
+                    value="rsi_overbought">RSI Overbought</option>
+                    <option {% if request.query_params.filter == 'rsi_oversold' %} selected ='selected' {% endif %}
+                    value="rsi_oversold">RSI Oversold</option>
+                    <option {% if request.query_params.filter == 'above_sma_20' %} selected ='selected' {% endif %}
+                    value="above_sma_20">Above 20 SMA</option>
+                    <option {% if request.query_params.filter == 'below_sma_20' %} selected ='selected' {% endif %}
+                    value="below_sma_20">Below 20 SMA</option>
+                    <option {% if request.query_params.filter == 'above_sma_50' %} selected ='selected' {% endif %}
+                    value="above_sma_50">Above 50 SMA</option>
+                    <option {% if request.query_params.filter == 'below_sma_50' %} selected ='selected' {% endif %}
+                    value="below_sma_50">Below 50 SMA</option>
                 </select>
                 <input type="submit" />
             </form>
@@ -32,19 +33,27 @@
                     <tr>
                         <th>Symbol</th>
                         <th>Name</th>
+                        <th>Shortable</th>
                         <th>Price</th>
                         <th>RSI 14</th>
                         <th>SMA 20</th>
                         <th>SMA 50</th>
                     </tr>
                 </thead>
-    
+
                 <tbody>
                     {% for stock in stocks %}
                     <tr>
                         <td>{{ stock.symbol }}</td>
                         <!-- Now display stock.name but put a link to it -->
                         <td><a href="/stock/{{ stock.symbol }}">{{ stock.name }}</a></td>
+                        <td>
+                            {% if stock.shortable %}
+                                <i class="green check icon"></i>
+                            {% else %}
+                                <i class="red times icon"></i>
+                            {% endif %}
+                        </td>
                         <!-- The situation where the symbol is not in indicator values is if the symbol has no data for today's date (Cronjob hasn't updated yet) -->
                         {% if stock.symbol in indicator_values %}
 
@@ -90,6 +99,5 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-    </body>
-</html>
+{% endblock %}
+

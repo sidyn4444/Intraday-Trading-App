@@ -22,15 +22,27 @@ api = tradeapi.REST(
 )
 
 assets = api.list_assets()
+existing_symbols = set(symbols)
 newStocksAdded = 0
+shortableUpdated = 0
 
 for asset in assets:
-    if asset.status == 'active' and asset.tradable and asset.symbol not in symbols:
-        print(f"Added a new stock {asset.symbol} {asset.name}")
-        cursor.execute("INSERT INTO stock (symbol, name, exchange) VALUES (?,?, ?)", (asset.symbol, asset.name, asset.exchange))
-        newStocksAdded = newStocksAdded + 1
-        
-if newStocksAdded == 0:
-        print("No new stocks added")
+    if asset.status == 'active' and asset.tradable:
+        shortable_int = 1 if asset.shortable else 0
+        if asset.symbol not in existing_symbols:
+            print(f"Added a new stock {asset.symbol} {asset.name}")
+            cursor.execute(
+                "INSERT INTO stock (symbol, name, exchange, shortable) VALUES (?, ?, ?, ?)",
+                (asset.symbol, asset.name, asset.exchange, shortable_int)
+            )
+            newStocksAdded += 1
+        else:
+            cursor.execute(
+                "UPDATE stock SET shortable = ? WHERE symbol = ?",
+                (shortable_int, asset.symbol)
+            )
+            shortableUpdated += 1
+
+print(f"Added {newStocksAdded} new stocks; refreshed shortable for {shortableUpdated} existing stocks")
 
 connection.commit()

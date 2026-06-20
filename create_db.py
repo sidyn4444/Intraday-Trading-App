@@ -9,12 +9,13 @@ cursor.execute("""
                     id INTEGER PRIMARY KEY,
                     symbol TEXT NOT NULL UNIQUE,
                     name TEXT NOT NULL,
-                    exchange TEXT NOT NULL
+                    exchange TEXT NOT NULL,
+                    shortable INTEGER NOT NULL
                )
 """)
 
-# stock_id is an integer to relate to stock table so we don't have to continuously change values
-# also helps with addin/removing from all of the tables at once
+# stock_id is a foreign key into stock so the symbol can be renamed in one place
+# without having to update every price row
 cursor.execute("""
                CREATE TABLE IF NOT EXISTS stock_price (
                     id INTEGER PRIMARY KEY,
@@ -33,8 +34,8 @@ cursor.execute("""
                )
 """)
 
-# Good for linking stock id with strategy in stock_strategy database
-# Also helps with ui dropdown option because we can use strategy id for the dropdown
+# strategy is its own table so the UI dropdown can use strategy.id directly
+# and so stock_strategy can foreign-key into it
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS strategy (
         id INTEGER PRIMARY KEY,
@@ -42,7 +43,8 @@ cursor.execute("""
     )
 """)
 
-# Many to many relationship
+# Many-to-many link table: one stock can run multiple strategies and
+# one strategy can be applied to many stocks
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS stock_strategy (
         stock_id INTEGER NOT NULL,

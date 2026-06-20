@@ -1,6 +1,7 @@
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
-alpaca-trade-api==3.0.2
+alpaca-trade-api>=3.0.2
+PyYAML>=6.0.1
 tulipy==0.4.0
 pandas==2.1.3
 python-multipart==0.0.6

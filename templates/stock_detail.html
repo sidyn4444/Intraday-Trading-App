@@ -2,10 +2,16 @@
 
 {% block content %}
 
-    <h1><a href="/">Stocks</a> 
+    <h1><a href="/">Stocks</a>
+        <!-- Shows the double right arrows -->
         <i class="angle double right icon"></i>
         {{ stock.name }}
         ({{ stock.symbol }})
+        {% if stock.shortable %}
+            <span class="ui green label">Shortable</span>
+        {% else %}
+            <span class="ui red label">Not Shortable</span>
+        {% endif %}
     </h1>
 
     <!-- TradingView Widget BEGIN -->
@@ -49,9 +55,9 @@
 <!-- TradingView Widget END -->
     
 <!-- All of the data needed for stock_detail was sent in the python function -->
-    <!-- Will look for the function that has /apply_strategy and take the data sent out here and adjust databases accordingly -->
+    <!-- Will look for the function that has /apply_strategy in main.py and take the data sent out here and adjust databases accordingly -->
    <form method ="post" action ="/apply_strategy">
-    <!-- This is a dropdown option visible to the user and the option chosen gets stored as strategy_id by id -->
+    <!-- This is a dropdown option visible to the user and the option chosen gets stored as strategy_id as thats what the function in main will identify it as -->
     <select name = "strategy_id">
         {% for strategy in strategies %}
         <!-- Option is stored as strategy.id but to the user it is displayed by name -->
@@ -59,7 +65,7 @@
    {% endfor %}
     </select>
 
-    <!-- This is not visible to the user but is known by the program as stock_detail sent it here and is then sent out as well under stock_id -->
+    <!-- This is not visible to the user but is known by the program as stock_detail sent it here and is then sent out as well to main under stock_id -->
     <input type="hidden" name="stock_id"value="{{ stock.id }}"/>
     <!-- This is the button to trigger the action -->
     <input type="submit" value="Apply Strategy"/>

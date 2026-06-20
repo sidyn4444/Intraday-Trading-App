@@ -15,6 +15,7 @@
         <tr>
             <th>Symbol</th>
             <th>Name</th>
+            <th>Shortable</th>
         </tr>
     </thead>
     <tbody>
@@ -22,6 +23,13 @@
         <tr>
             <td>{{ stock.symbol }}</td>
             <td>{{ stock.name }}</td>
+            <td>
+                {% if stock.shortable %}
+                    <i class="green check icon"></i>
+                {% else %}
+                    <i class="red times icon"></i>
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
