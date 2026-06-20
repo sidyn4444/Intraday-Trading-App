@@ -96,6 +96,7 @@ Cron's PATH does not include the venv, so every entry must reference `venv/bin/p
 - **Bracket orders**: every entry submits with `take_profit` and `stop_loss` legs in the same `api.submit_order()` call. Alpaca handles OCO server-side.
 - **End-of-day flatten**: `daily_close.py` cancels open orders and closes all positions at 15:30 ET. Nothing is held overnight.
 
+
 ## Stack
 
 FastAPI · Jinja2 · SQLite · alpaca-trade-api · tulipy · pandas
@@ -105,6 +106,3 @@ FastAPI · Jinja2 · SQLite · alpaca-trade-api · tulipy · pandas
 
 This code trades against `paper-api.alpaca.markets` so it does not use real money. Use real money at your own risk.
 
-## Acknowledgments
-
-Initial architecture and several strategy patterns are based on the [Part Time Larry](https://www.youtube.com/@parttimelarry) "Hacking the Markets" YouTube series. Position sizing via `helpers.calculate_quantity`, the Bollinger Bands long/short pair, the daily close script, and the multi-strategy cron coordination were added on top.
