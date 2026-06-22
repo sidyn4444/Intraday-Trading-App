@@ -209,16 +209,20 @@ for symbol in symbols:
 
 connection.close()
 
-# Email failures shouldn't roll back trades that already submitted
+# Skip cleanly if creds aren't configured. Email failures shouldn't roll
+# back trades that already submitted.
 if messages:
-    try:
-        with smtplib.SMTP_SSL(config.EMAIL_HOST, config.EMAIL_PORT, context=context) as server:
-            server.login(config.EMAIL_ADDRESS, config.EMAIL_PASSWORD)
+    if not getattr(config, "EMAIL_ADDRESS", None) or not getattr(config, "EMAIL_PASSWORD", None):
+        print("Email creds not configured; skipping notification.")
+    else:
+        try:
+            with smtplib.SMTP_SSL(config.EMAIL_HOST, config.EMAIL_PORT, context=context) as server:
+                server.login(config.EMAIL_ADDRESS, config.EMAIL_PASSWORD)
 
-            email_message = f"Subject: Bollinger Trade Notifications for {current_day}\n\n"
-            email_message += "\n\n".join(messages)
+                email_message = f"Subject: Bollinger Trade Notifications for {current_day}\n\n"
+                email_message += "\n\n".join(messages)
 
-            server.sendmail(config.EMAIL_ADDRESS, config.EMAIL_ADDRESS, email_message)
-    except Exception as e:
-        print(f"Email notification failed ({type(e).__name__}): {e}")
-        print("Trades already submitted; email failure does not affect orders.")
+                server.sendmail(config.EMAIL_ADDRESS, config.EMAIL_ADDRESS, email_message)
+        except Exception as e:
+            print(f"Email notification failed ({type(e).__name__}): {e}")
+            print("Trades already submitted; email failure does not affect orders.")

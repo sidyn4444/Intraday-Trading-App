@@ -210,12 +210,20 @@ for symbol in symbols:
     print(f"{symbol}: order submitted (paper) as bracket limit order.")
 
 # One email at the end of the run if we placed at least one order, so we
-# don't spam ourselves on quiet days
+# don't spam ourselves on quiet days. Skip cleanly if creds aren't configured,
+# and never let an email failure roll back trades that already submitted.
 if messages:
-    with smtplib.SMTP_SSL(config.EMAIL_HOST, config.EMAIL_PORT, context=context) as server:
-        server.login(config.EMAIL_ADDRESS, config.EMAIL_PASSWORD)
+    if not getattr(config, "EMAIL_ADDRESS", None) or not getattr(config, "EMAIL_PASSWORD", None):
+        print("Email creds not configured; skipping notification.")
+    else:
+        try:
+            with smtplib.SMTP_SSL(config.EMAIL_HOST, config.EMAIL_PORT, context=context) as server:
+                server.login(config.EMAIL_ADDRESS, config.EMAIL_PASSWORD)
 
-        email_message = f"Subject: Trade Notifications for {current_day}\n\n"
-        email_message += "\n\n".join(messages)
+                email_message = f"Subject: Trade Notifications for {current_day}\n\n"
+                email_message += "\n\n".join(messages)
 
-        server.sendmail(config.EMAIL_ADDRESS, config.EMAIL_ADDRESS, email_message)
+                server.sendmail(config.EMAIL_ADDRESS, config.EMAIL_ADDRESS, email_message)
+        except Exception as e:
+            print(f"Email notification failed ({type(e).__name__}): {e}")
+            print("Trades already submitted; email failure does not affect orders.")
