@@ -16,7 +16,7 @@ from datetime import date
 import pandas as pd
 import smtplib, ssl
 import tulipy as ti
-from helpers import calculate_quantity
+from helpers import calculate_quantity, round_to_penny
 
 context = ssl.create_default_context()
 
@@ -24,10 +24,6 @@ pd.set_option("display.max_columns", None)
 pd.set_option("display.width", 200)
 
 DRY_RUN = False
-
-def round_to_penny(x: float) -> float:
-    """Round to 2 decimals. +1e-9 nudge avoids 0.005 silently rounding to 0.00."""
-    return round(float(x) + 1e-9, 2)
 
 connection = sqlite3.connect(config.DB_FILE)
 connection.row_factory = sqlite3.Row

@@ -18,7 +18,7 @@ import alpaca_trade_api as tradeapi
 from datetime import date
 import pandas as pd
 import smtplib, ssl
-from helpers import calculate_quantity
+from helpers import calculate_quantity, round_to_penny
 
 context = ssl.create_default_context()
 
@@ -30,14 +30,6 @@ pd.set_option("display.width", 200)
 # =========================
 # Flip to True to dry-run: everything prints but no orders are submitted.
 DRY_RUN = False
-
-def round_to_penny(x: float) -> float:
-    """Round to 2 decimals.
-
-    The +1e-9 nudge avoids the classic float case where 0.005 silently
-    rounds DOWN to 0.00 because of binary representation.
-    """
-    return round(float(x) + 1e-9, 2)
 
 # =========================
 # Load symbols from DB
