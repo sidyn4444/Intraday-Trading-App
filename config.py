@@ -42,3 +42,11 @@ EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
 
 # int() cast because env vars are ALWAYS strings - smtplib needs an int port
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '465'))
+
+# Production feature flag. When True, mutating endpoints (currently only
+# /apply_strategy) return 403 Forbidden. Lets us deploy the dashboard publicly
+# without strangers being able to assign strategies to stocks in our paper
+# account. Default False so local dev still allows POSTs.
+# Env vars are strings, so we compare against the lowercase 'true' explicitly
+# rather than relying on Python's truthiness (which would treat 'false' as True).
+READ_ONLY = os.environ.get('READ_ONLY', 'false').lower() == 'true'

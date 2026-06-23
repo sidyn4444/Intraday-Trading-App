@@ -15,7 +15,7 @@ silently produce empty results.
 
 import sqlite3, config
 import alpaca_trade_api as tradeapi
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, HTTPException
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from datetime import date
@@ -163,7 +163,17 @@ def stock_detail(request: Request, symbol):
 @app.post("/apply_strategy")
 def apply_strategy(strategy_id: int = Form(...), stock_id: int = Form(...)):
     """Assign a stock to a strategy. Form-posted from stock_detail.html, then
-    303-redirect to the strategy detail page so a refresh doesn't re-submit."""
+    303-redirect to the strategy detail page so a refresh doesn't re-submit.
+
+    Blocked when READ_ONLY is True so public deploys can't accept anonymous
+    strategy assignments. Local dev still works because READ_ONLY defaults False.
+    """
+    if config.READ_ONLY:
+        raise HTTPException(
+            status_code=403,
+            detail="Strategy assignment is disabled in production mode."
+        )
+
     connection = sqlite3.connect(config.DB_FILE)
     cursor = connection.cursor()
 
