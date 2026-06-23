@@ -1,8 +1,10 @@
 # Intraday Trading App
 
+**Live demo**: [intraday-trading-app.up.railway.app](https://intraday-trading-app.up.railway.app)
+
 FastAPI dashboard and a cron-driven Python trading bot against the Alpaca paper trading API. Screens ~10K tradable symbols across 8 technical filters, runs four intraday strategies, and flattens all positions 30 minutes before market close.
 
-Paper trading only (`paper-api.alpaca.markets`). No real capital is at risk.
+Paper trading only (`paper-api.alpaca.markets`). No real capital is at risk. The deployed demo is read-only (`READ_ONLY=true` env flag disables the strategy-assignment POST) and reads from a bundled snapshot SQLite seeded with ~50 well-known tickers — the live trading bot still runs locally against the full database.
 
 ## Components
 
