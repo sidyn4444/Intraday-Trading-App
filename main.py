@@ -18,7 +18,6 @@ import alpaca_trade_api as tradeapi
 from fastapi import FastAPI, Request, Form, HTTPException
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-from datetime import date
 
 app = FastAPI()
 templates = Jinja2Templates(directory = "templates")
@@ -134,7 +133,7 @@ def index(request: Request):
     for row in indicator_rows:
         indicator_values[row['symbol']] = row
     connection.close()
-    return templates.TemplateResponse(request, "index.html", {"stocks": rows, "indicator_values": indicator_values})
+    return templates.TemplateResponse("index.html", {"request": request, "stocks": rows, "indicator_values": indicator_values})
 
 @app.get("/stock/{symbol}")
 def stock_detail(request: Request, symbol):
@@ -158,7 +157,7 @@ def stock_detail(request: Request, symbol):
     """, (row['id'],))
     prices = cursor.fetchall()
     connection.close()
-    return templates.TemplateResponse(request, "stock_detail.html", {"stock": row, "bars": prices, "strategies": strategies})
+    return templates.TemplateResponse("stock_detail.html", {"request": request, "stock": row, "bars": prices, "strategies": strategies})
 
 @app.post("/apply_strategy")
 def apply_strategy(strategy_id: int = Form(...), stock_id: int = Form(...)):
@@ -198,9 +197,8 @@ def strategies(request: Request):
     """)
     strategies = cursor.fetchall()
     return templates.TemplateResponse(
-        request,
         "strategies.html",
-        {"strategies": strategies}
+        {"request": request, "strategies": strategies}
     )
 
 @app.get("/orders")
@@ -215,9 +213,8 @@ def orders(request: Request):
     orders = api.list_orders(status="all")
 
     return templates.TemplateResponse(
-        request,
         "orders.html",
-        {"orders": orders}
+        {"request": request, "orders": orders}
     )
 
 @app.get("/strategy/{strategy_id}")
@@ -249,7 +246,6 @@ def strategy(request: Request, strategy_id: int):
     stocks = cursor.fetchall()
     connection.close()
     return templates.TemplateResponse(
-        request,
         "strategy.html",
-        {"stocks": stocks, "strategy": strategy}
+        {"request": request, "stocks": stocks, "strategy": strategy}
     )
