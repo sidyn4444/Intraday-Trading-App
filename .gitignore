@@ -20,7 +20,8 @@ __pycache__/
 *.sqlite3
 
 # Secrets
-config.py
+# config.py is NOT gitignored anymore — it reads from env vars (no secrets in it).
+# The actual secrets live in .env (local) or the cloud platform's secret store (prod).
 .env
 .env.local
 .env.*.local
