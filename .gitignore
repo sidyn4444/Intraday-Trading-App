@@ -18,6 +18,8 @@ __pycache__/
 *.db
 *.sqlite
 *.sqlite3
+# Allow the committed portfolio-demo SQLite (small, public-safe) through.
+!app-demo.db
 
 # Secrets
 # config.py is NOT gitignored anymore — it reads from env vars (no secrets in it).
