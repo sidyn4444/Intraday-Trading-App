@@ -1,0 +1,48 @@
+# Runs the pytest suite on every push and pull request.
+# This is the gate that proves the test suite still passes before code reaches
+# main — the green badge in the README pulls its state directly from this workflow.
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  pytest:
+    # ubuntu-latest is GitHub's standard managed runner — free for public repos,
+    # gives us a clean Linux env that resembles what Railway builds against.
+    runs-on: ubuntu-latest
+
+    steps:
+      # Pulls the repo onto the runner so the rest of the steps can see the code.
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Pin to 3.12 so CI matches what Railway runs in production
+      # (we pinned that in .python-version when pandas 2.1.3 wouldn't compile on 3.13).
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          # Caches the pip download cache across runs so repeated builds skip
+          # the slowest part — downloading wheels for pandas, alpaca-trade-api, etc.
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Tests need ALPACA_API_KEY etc. in the environment because config.py reads
+      # them at import time. Tests don't actually hit Alpaca, but config.py runs
+      # `os.environ['ALPACA_API_KEY']` on import and would crash with KeyError if
+      # missing. Dummy values are fine because no test makes a real API call.
+      - name: Run pytest
+        env:
+          ALPACA_API_KEY: dummy_ci_key
+          ALPACA_SECRET_KEY: dummy_ci_secret
+          DB_FILE: app-demo.db
+          READ_ONLY: "false"
+        run: pytest tests/ -v
