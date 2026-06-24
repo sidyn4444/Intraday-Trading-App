@@ -46,3 +46,26 @@ jobs:
           DB_FILE: app-demo.db
           READ_ONLY: "false"
         run: pytest tests/ -v
+
+  # Separate job that verifies the Dockerfile actually builds. Runs in parallel
+  # with pytest so the workflow stays fast. Doesn't push the image anywhere —
+  # this is just a build smoke test catching Dockerfile typos or missing deps.
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      # docker/setup-buildx-action sets up Buildx which is the modern, faster
+      # Docker builder (supports layer caching across runs out of the box).
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build the Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false  # don't publish to a registry — we just want to know it builds
+          tags: intraday-trading-app:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

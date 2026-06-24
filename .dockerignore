@@ -1,0 +1,39 @@
+# Files Docker should NOT copy into the image during build.
+# Smaller build context = faster builds + smaller attack surface.
+
+# Secrets — these must never end up in the image
+.env
+.env.local
+.env.*.local
+config.py.bak
+
+# Local dev artifacts
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+.mypy_cache/
+.ruff_cache/
+
+# The real production-grade DB (3GB). The committed app-demo.db IS included
+# because the dashboard reads from it on Railway.
+app.db
+
+# Git + IDE noise
+.git/
+.github/
+.vscode/
+.idea/
+.DS_Store
+
+# Test infrastructure isn't needed in the runtime image
+tests/
+
+# Personal notes shouldn't ship in the container
+notes/
+
+# Logs
+logs/
+*.log
