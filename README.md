@@ -1,5 +1,7 @@
 # Intraday Trading App
 
+[![tests](https://github.com/sidyn4444/Intraday-Trading-App/actions/workflows/tests.yml/badge.svg)](https://github.com/sidyn4444/Intraday-Trading-App/actions/workflows/tests.yml)
+
 **Live demo**: [intraday-trading-app.up.railway.app](https://intraday-trading-app.up.railway.app)
 
 FastAPI dashboard and a cron-driven Python trading bot against the Alpaca paper trading API. Screens ~10K tradable symbols across 8 technical filters, runs four intraday strategies, and flattens all positions 30 minutes before market close.

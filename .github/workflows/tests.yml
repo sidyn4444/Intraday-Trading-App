@@ -18,12 +18,12 @@ jobs:
     steps:
       # Pulls the repo onto the runner so the rest of the steps can see the code.
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Pin to 3.12 so CI matches what Railway runs in production
       # (we pinned that in .python-version when pandas 2.1.3 wouldn't compile on 3.13).
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           # Caches the pip download cache across runs so repeated builds skip
