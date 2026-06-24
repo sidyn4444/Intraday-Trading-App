@@ -11,14 +11,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# tulipy 0.4.0 was last updated in 2020 against the numpy 1.x C API. By default
-# pip creates a fresh "build env" for tulipy that pulls numpy 2.x, which breaks
-# its C extension (`const double * const*` vs `double **` pointer mismatch).
-# Pre-install build deps including numpy<2, then install tulipy with
-# --no-build-isolation so it reuses the already-installed numpy 1.x.
+# tulipy 0.4.0 was last updated in 2020 and is incompatible with two newer libs:
+#   - numpy 2.x changed C API pointer constness (need numpy<2)
+#   - Cython 3.x generates stricter C code than tulipy's source expects (need cython<3)
+# Pre-install both at the correct old versions, then build tulipy with
+# --no-build-isolation so it reuses these instead of pulling latest into an
+# isolated build env.
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir "numpy<2" "cython" "setuptools" "wheel" && \
+    pip install --no-cache-dir "numpy<2" "cython<3" "setuptools" "wheel" && \
     pip install --no-cache-dir --no-build-isolation tulipy==0.4.0 && \
     pip install --no-cache-dir -r requirements.txt
 
