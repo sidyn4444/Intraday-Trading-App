@@ -1,8 +1,18 @@
 # Slim Python 3.12 base image — matches what Railway and our GitHub Actions CI
-# use, and tiny enough (~50MB) to keep cold-start pulls fast.
+# use, and tiny enough (~50MB before deps) to keep cold-start pulls fast.
 FROM python:3.12-slim
 
-# Standard practice: keep the app under /app. Everything we COPY ends up here.
+# tulipy is a C extension that compiles from source on install (no prebuilt wheel
+# for it exists), so the slim base image needs gcc + Python headers. We install
+# them as a CACHED Docker layer so we only pay this cost once — code edits below
+# don't bust this layer. `--no-install-recommends` and the rm of /var/lib/apt/lists
+# keep the image lean (~150MB total instead of full python:3.12 at ~900MB).
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        gcc \
+        python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Standard practice: keep the app under /app.
 WORKDIR /app
 
 # Copy ONLY requirements.txt first, install deps, THEN copy the rest of the code.
