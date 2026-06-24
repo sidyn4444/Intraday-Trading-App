@@ -1,30 +1,17 @@
-# Slim Python 3.10 base image — pinned to 3.10 because tulipy 0.4.0 was last
-# updated in 2020 and depends on the Python C header longintrepr.h, which was
-# moved to internal in 3.11 and removed entirely in 3.12. 3.10 is the newest
-# Python where tulipy still compiles. Matches Railway via .python-version and
-# CI via tests.yml.
-FROM python:3.10-slim
-
-# tulipy is a C extension that compiles from source on install (no prebuilt wheel
-# for it exists), so the slim base image needs gcc + Python headers.
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        gcc \
-        python3-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Slim Python 3.12 base image — matches Railway's Python version and our CI.
+# We can use modern Python because we install requirements-prod.txt (no tulipy)
+# instead of the full requirements.txt — tulipy is a 2020-vintage C extension
+# that doesn't build on Python 3.11+, and the deployed dashboard never imports
+# it anyway. Only the local strategy scripts use tulipy.
+FROM python:3.12-slim
 
 WORKDIR /app
 
-# tulipy 0.4.0 is incompatible with two newer libs by default:
-#   - numpy 2.x changed C API pointer constness (need numpy<2)
-#   - Cython 3.x generates stricter C code than tulipy's source expects (need cython<3)
-# Pre-install both at the correct old versions, then build tulipy with
-# --no-build-isolation so it reuses these instead of pulling latest into an
-# isolated build env.
-COPY requirements.txt .
+# Copy ONLY the production requirements first so Docker can cache the
+# dependency install layer separately from app code changes.
+COPY requirements-prod.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir "numpy<2" "cython<3" "setuptools" "wheel" && \
-    pip install --no-cache-dir --no-build-isolation tulipy==0.4.0 && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r requirements-prod.txt
 
 # Copy the actual app code AFTER deps are cached.
 COPY . .

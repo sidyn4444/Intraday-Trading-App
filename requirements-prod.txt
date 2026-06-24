@@ -1,0 +1,18 @@
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+alpaca-trade-api>=3.0.2
+PyYAML>=6.0.1
+pandas==2.1.3
+python-multipart==0.0.6
+Jinja2==3.1.2
+python-dotenv==1.2.1
+
+# Testing — included because GitHub Actions runs pytest against this file too,
+# so CI doesn't have to install requirements.txt (which would re-introduce tulipy).
+pytest==8.4.2
+
+# NOT included here on purpose: tulipy
+# tulipy is only used by the strategy scripts (opening_range_*, bollinger_*,
+# populate_prices.py), which run locally on cron. The deployed dashboard and
+# the test suite never import tulipy, so omitting it lets us use modern
+# Python (3.12) in the cloud without fighting tulipy's stale C extension.
