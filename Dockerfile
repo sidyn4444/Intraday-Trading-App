@@ -1,7 +1,9 @@
-# Slim Python 3.11 base image — pinned to 3.11 because tulipy 0.4.0 was last
-# updated in 2020 and depends on Python C headers (longintrepr.h) that were
-# removed in 3.12. Matches Railway via .python-version and CI via tests.yml.
-FROM python:3.11-slim
+# Slim Python 3.10 base image — pinned to 3.10 because tulipy 0.4.0 was last
+# updated in 2020 and depends on the Python C header longintrepr.h, which was
+# moved to internal in 3.11 and removed entirely in 3.12. 3.10 is the newest
+# Python where tulipy still compiles. Matches Railway via .python-version and
+# CI via tests.yml.
+FROM python:3.10-slim
 
 # tulipy is a C extension that compiles from source on install (no prebuilt wheel
 # for it exists), so the slim base image needs gcc + Python headers.
